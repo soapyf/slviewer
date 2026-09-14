@@ -44,7 +44,7 @@
 #include <CoreGraphics/CGDisplayConfiguration.h>
 
 #include <IOKit/IOCFPlugIn.h>
-#include <IOKit/IOKitLib.h>
+#include "llwindowmacosx_iokit.h"
 #include <IOKit/IOMessage.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hid/IOHIDLib.h>
@@ -165,6 +165,7 @@ LLWindowMacOSX::LLWindowMacOSX(LLWindowCallbacks* callbacks,
     // Route them to a dummy callback structure until the end of constructor.
     LLWindowCallbacks null_callbacks;
     mCallbacks = &null_callbacks;
+    mIsConstructing = true;
 
     // Voodoo for calling cocoa from carbon (see llwindowmacosx-objc.mm).
     setupCocoa();
@@ -236,9 +237,8 @@ LLWindowMacOSX::LLWindowMacOSX(LLWindowCallbacks* callbacks,
     }
 
     mCallbacks = callbacks;
+    mIsConstructing = false;
     stop_glerror();
-
-
 }
 
 // These functions are used as wrappers for our internal event handling callbacks.
@@ -387,7 +387,7 @@ void callLeftMouseUp(float *pos, MASK mask)
 
 }
 
-void callDoubleClick(float *pos, MASK mask)
+void callLeftDoubleClick(float* pos, MASK mask)
 {
     if (!gWindowImplementation)
     {
@@ -401,7 +401,41 @@ void callDoubleClick(float *pos, MASK mask)
     LLCoordGL   outCoords;
     outCoords.mX = ll_round(pos[0]);
     outCoords.mY = ll_round(pos[1]);
-    gWindowImplementation->getCallbacks()->handleDoubleClick(gWindowImplementation, outCoords, gKeyboard->currentMask(true));
+    gWindowImplementation->getCallbacks()->handleLeftMouseDoubleClick(gWindowImplementation, outCoords, gKeyboard->currentMask(true));
+}
+
+void callRightDoubleClick(float* pos, MASK mask)
+{
+    if (!gWindowImplementation)
+    {
+        return;
+    }
+    if (gWindowImplementation->allowsLanguageInput())
+    {
+        gWindowImplementation->interruptLanguageTextInput();
+    }
+
+    LLCoordGL   outCoords;
+    outCoords.mX = ll_round(pos[0]);
+    outCoords.mY = ll_round(pos[1]);
+    gWindowImplementation->getCallbacks()->handleRightMouseDoubleClick(gWindowImplementation, outCoords, gKeyboard->currentMask(true));
+}
+
+void callMiddleDoubleClick(float* pos, MASK mask)
+{
+    if (!gWindowImplementation)
+    {
+        return;
+    }
+    if (gWindowImplementation->allowsLanguageInput())
+    {
+        gWindowImplementation->interruptLanguageTextInput();
+    }
+
+    LLCoordGL   outCoords;
+    outCoords.mX = ll_round(pos[0]);
+    outCoords.mY = ll_round(pos[1]);
+    gWindowImplementation->getCallbacks()->handleMiddleMouseDoubleClick(gWindowImplementation, outCoords, gKeyboard->currentMask(true));
 }
 
 void callResize(unsigned int width, unsigned int height)
@@ -409,6 +443,14 @@ void callResize(unsigned int width, unsigned int height)
     if (gWindowImplementation && gWindowImplementation->getCallbacks())
     {
         gWindowImplementation->getCallbacks()->handleResize(gWindowImplementation, width, height);
+    }
+}
+
+void callRequestResolutionUpdate()
+{
+    if (gWindowImplementation && gWindowImplementation->getCallbacks())
+    {
+        gWindowImplementation->getCallbacks()->handleRequestResolutionUpdate(gWindowImplementation);
     }
 }
 
@@ -703,6 +745,11 @@ void getPreeditLocation(float *location, unsigned int length)
         location[0] = c[0];
         location[1] = c[1];
     }
+}
+
+bool windowCallbacksReady()
+{
+    return gWindowImplementation && !gWindowImplementation->isConstructing();
 }
 
 void LLWindowMacOSX::updateMouseDeltas(float* deltas)
@@ -2379,7 +2426,7 @@ bool LLWindowMacOSX::getInputDevices(U32 device_type_filter,
     io_iterator_t io_iter = 0;
 
     // create an IO object iterator
-    result = IOServiceGetMatchingServices( kIOMasterPortDefault, device_dict_ref, &io_iter );
+    result = IOServiceGetMatchingServices( kLLIOMainPort, device_dict_ref, &io_iter );
     if ( kIOReturnSuccess != result )
     {
         LL_WARNS("Joystick") << "IOServiceGetMatchingServices failed" << LL_ENDL;
@@ -2631,6 +2678,12 @@ std::vector<std::string> LLWindowMacOSX::getDynamicFallbackFontList()
 {
     // Fonts previously in getFontListSans() have moved to fonts.xml.
     return std::vector<std::string>();
+}
+
+LLFontFallbackMatch LLWindowMacOSX::findFallbackFontForChar(llwchar wch)
+{
+    // Not implemented on macOS; would use CoreText (CTFontCreateForString).
+    return LLFontFallbackMatch();
 }
 
 // static

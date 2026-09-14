@@ -202,6 +202,16 @@ No tutorial is currently available.
 
   <notification
    icon="alertmodal.tga"
+   name="FoundLegacyNsisInstallation"
+   type="alertmodal">
+      [APP_NAME] found an installation of an older version [VERSION]. To uninstall the older version, please follow [https://community.secondlife.com/knowledgebase/english/how-to-uninstall-and-reinstall-second-life-r524 this manual].
+      <usetemplate
+       name="okbutton"
+       yestext="OK"/>
+  </notification>
+
+  <notification
+   icon="alertmodal.tga"
    name="LoginFailedNoNetwork"
    type="alertmodal">
     <tag>fail</tag>
@@ -412,6 +422,17 @@ Initialization with the Marketplace failed because of a system or network error.
         <usetemplate
         name="okbutton"
         yestext="OK"/>
+    </notification>
+
+    <notification
+        icon="alertmodal.tga"
+        name="CannotPasteFolderIntoSelf"
+        type="alertmodal">
+        You cannot paste a folder into itself or into one of its subfolders.
+        <tag>fail</tag>
+        <usetemplate
+          name="okbutton"
+          yestext="OK"/>
     </notification>
 
     <notification
@@ -3940,7 +3961,6 @@ Local Data you are deleting is shared between multiple grids, are you sure you w
 Your character will appear in a moment.
 
 Use arrow keys to walk.
-Press the F1 key at any time for help or to learn more about [SECOND_LIFE].
 Please choose the male or female avatar. You can change your mind later.
     <usetemplate
      name="okcancelbuttons"
@@ -4419,6 +4439,14 @@ Click OK to download and install.
     <usetemplate
      name="okbutton"
      yestext="OK"/>
+  </notification>
+
+  <notification
+   icon="alertmodal.tga"
+   name="DownloadingUpdate"
+   type="alertmodal">
+Downloading update [VERSION]...
+The viewer will restart once the download is complete.
   </notification>
 
   <notification
@@ -5663,6 +5691,17 @@ You won't receive any more notifications that you're about to visit a region wit
 
   <notification
    icon="alertmodal.tga"
+   name="RegionTPAccessBlocked_NotifyAdultsOnly"
+   type="alertmodal">
+    <tag>fail</tag>
+    The region you are trying to visit is rated [REGIONMATURITY_CAP], which is not available on your account type.
+    <usetemplate
+     name="okbutton"
+     yestext="OK"/>
+  </notification>
+
+  <notification
+   icon="alertmodal.tga"
    name="LandClaimAccessBlocked"
    type="alertmodal">
     The land you're trying to claim has a maturity rating exceeding your current preferences.  You can change your preferences using Me &gt; Preferences &gt; General.
@@ -6726,6 +6765,14 @@ Your trash is overflowing. This may cause problems logging in.
   </notification>
 
   <notification
+   icon="notifytip.tga"
+   name="InventoryLimitReachedAIS"
+   type="notifytip">
+Your inventory is experiencing issues. Please, contact support.
+  <tag>fail</tag>
+  </notification>
+
+  <notification
    icon="alertmodal.tga"
    name="InventoryLimitReachedAISAlert"
    type="alertmodal">
@@ -7037,6 +7084,27 @@ The string [STRING_NAME] is missing from strings.xml
    name="SystemMessageTip"
    type="notifytip">
 [MESSAGE]
+  </notification>
+
+  <notification
+   icon="notifytip.tga"
+   name="ExternalEditorServerStarted"
+   type="notifytip">
+External editor server started on port [PORT].
+  </notification>
+
+  <notification
+   icon="notifytip.tga"
+   name="ExternalEditorServerFailed"
+   type="notifytip">
+Failed to start external editor server on port [PORT].
+  </notification>
+
+  <notification
+   icon="notifytip.tga"
+   name="ExternalEditorServerStopped"
+   type="notifytip">
+External editor server stopped.
   </notification>
   
   <notification
@@ -7660,7 +7728,7 @@ Message from [NAME]:
    type="notify">
     <unique/>
 This land has damage enabled.
-You can be hurt here. If you die, you will be teleported to your home location.
+You can be hurt here. If you die, you might be teleported to your home location, region telehub or parcel landing point.
   </notification>
 
   <notification
@@ -9209,6 +9277,23 @@ Your voice has been muted by moderator.
          yestext="OK"/>
     </notification>
 
+    <notification
+     icon="notifytip.tga"
+     name="NearbyVoiceMutedByModerator"
+     type="notifytip">
+        The moderator has muted your voice chat.
+People in this location will not hear you if you speak.
+     <tag>voice</tag>
+    </notification>
+
+    <notification
+     icon="notifytip.tga"
+     name="NearbyVoiceUnmutedByModerator"
+     type="notifytip">
+        Your voice chat can now be heard by people in this location.
+     <tag>voice</tag>
+    </notification>
+ 
     <notification
         icon="alertmodal.tga"
         name="FailedToGetBenefits"
